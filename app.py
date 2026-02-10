@@ -6,7 +6,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Skylark Drone Operations Coordinator")
+st.title("Drone Operations Coordinator AI Agent")
 
 # =====================================================
 # LOAD DATA
@@ -174,3 +174,4 @@ else:
 with st.expander("Why other pilots were not selected"):
     for name, reason in rejected:
         st.write(f"{name}: {reason}")
+
