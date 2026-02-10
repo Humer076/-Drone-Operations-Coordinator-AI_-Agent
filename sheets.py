@@ -1,8 +1,9 @@
+import streamlit as st
 import gspread
 import pandas as pd
 from google.oauth2.service_account import Credentials
 
-SPREADSHEET_NAME = "Skylark_Drones"
+SPREADSHEET_NAME = "Skylark_Drones"  # EXACT Google Sheet name
 
 def get_sheet(sheet_name):
     scope = [
@@ -10,8 +11,9 @@ def get_sheet(sheet_name):
         "https://www.googleapis.com/auth/drive"
     ]
 
-    creds = Credentials.from_service_account_file(
-        "service_account.json",
+    # ✅ READ CREDENTIALS FROM STREAMLIT SECRETS
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
         scopes=scope
     )
 
