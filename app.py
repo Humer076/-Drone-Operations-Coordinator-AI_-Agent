@@ -3,7 +3,7 @@ from sheets import get_sheet
 from datetime import datetime
 
 st.set_page_config(page_title="Skylark Drone Ops", layout="wide")
-st.title("🚁 Drone Operations Coordinator AI Agent")
+st.title("Drone Operations Coordinator AI Agent")
 
 # =====================================================
 # LOAD DATA
@@ -27,9 +27,9 @@ def has_overlap(start1, end1, start2, end2):
 # SIDEBAR OPERATIONS
 # =====================================================
 
-st.sidebar.header("⚙ Operations Panel")
+st.sidebar.header("Operations Panel")
 
-# --- Pilot Status Update ---
+# Pilot Status Update
 st.sidebar.subheader("Update Pilot Status")
 
 sel_pilot = st.sidebar.selectbox("Pilot", pilot_df["name"].tolist())
@@ -42,7 +42,7 @@ if st.sidebar.button("Update Pilot"):
     pilot_ws.update(f"F{row}", [[new_pilot_status]])
     st.sidebar.success("Pilot status updated")
 
-# --- Drone Status Update ---
+# Drone Status Update
 st.sidebar.subheader("Update Drone Status")
 
 sel_drone = st.sidebar.selectbox("Drone", drone_df["drone_id"].tolist())
@@ -55,7 +55,7 @@ if st.sidebar.button("Update Drone"):
     drone_ws.update(f"D{row}", [[new_drone_status]])
     st.sidebar.success("Drone status updated")
 
-# --- Mission Selection ---
+# Mission Selection
 st.sidebar.subheader("Mission Selection")
 sel_project = st.sidebar.selectbox(
     "Mission", mission_df["project_id"].tolist()
@@ -65,13 +65,13 @@ sel_project = st.sidebar.selectbox(
 # DATA DISPLAY
 # =====================================================
 
-st.subheader("👨‍✈️ Pilot Roster")
+st.subheader("Pilot Roster")
 st.dataframe(pilot_df, use_container_width=True)
 
-st.subheader("📋 Missions")
+st.subheader("Missions")
 st.dataframe(mission_df, use_container_width=True)
 
-st.subheader("🛩 Drone Inventory")
+st.subheader("Drone Inventory")
 st.dataframe(drone_df, use_container_width=True)
 
 # =====================================================
@@ -79,7 +79,7 @@ st.dataframe(drone_df, use_container_width=True)
 # =====================================================
 
 st.divider()
-st.subheader("🎯 Mission Assignment Evaluation")
+st.subheader("Mission Assignment Evaluation")
 
 mission = mission_df[
     mission_df["project_id"] == sel_project
@@ -95,17 +95,17 @@ st.markdown(f"""
 **Required Skill:** {mission['required_skills']}  
 **Required Certification:** {mission['required_certs']}  
 **Priority:** {mission['priority']}  
-**Dates:** {mission['start_date']} → {mission['end_date']}
+**Dates:** {mission['start_date']} to {mission['end_date']}
 """)
 
 if is_urgent:
-    st.warning("🚨 URGENT MISSION — Reassignment logic active")
+    st.warning("Urgent mission - reassignment logic active")
 
 # =====================================================
 # DRONE EVALUATION
 # =====================================================
 
-st.subheader("🛩 Drone Evaluation")
+st.subheader("Drone Evaluation")
 
 selected_drone = st.selectbox(
     "Select Drone for Mission", drone_df["drone_id"].tolist()
@@ -119,7 +119,7 @@ drone_conflict = False
 
 # Maintenance check
 if drone["status"].lower() in ["maintenance", "in maintenance"]:
-    st.error("❌ Drone is under maintenance")
+    st.error("Drone is under maintenance")
     drone_conflict = True
 
 # Double booking check
@@ -135,25 +135,25 @@ if drone["current_assignment"]:
 
         if has_overlap(mission_start, mission_end, a_start, a_end):
             if is_urgent and assigned["priority"].lower() == "low":
-                st.warning("⚠ Drone can be reassigned from low priority mission")
+                st.warning("Drone can be reassigned from low priority mission")
             else:
-                st.error("❌ Drone is double-booked")
+                st.error("Drone is double-booked")
                 drone_conflict = True
 
 # Capability check
 if mission["required_skills"].lower() not in str(drone["capabilities"]).lower():
-    st.error("❌ Drone lacks required capability")
+    st.error("Drone lacks required capability")
     drone_conflict = True
 
 # Location warning
 if drone["location"] != mission["location"]:
-    st.warning("⚠ Drone location mismatch")
+    st.warning("Drone location mismatch")
 
 # =====================================================
 # PILOT EVALUATION
 # =====================================================
 
-st.subheader("👨‍✈️ Pilot Evaluation")
+st.subheader("Pilot Evaluation")
 
 required_skill = mission["required_skills"].lower()
 required_cert = mission["required_certs"].lower()
@@ -179,12 +179,10 @@ for _, p in pilot_df.iterrows():
         rejected.append((p["name"], "Location mismatch"))
         continue
 
-    # Available pilot
     if p["status"] == "Available":
         eligible.append(p)
         continue
 
-    # Assigned pilot check
     if p["current_assignment"]:
         assigned = mission_df[
             mission_df["project_id"] == p["current_assignment"]
@@ -213,7 +211,7 @@ for _, p in pilot_df.iterrows():
 # =====================================================
 
 st.divider()
-st.subheader("✅ Assignment Recommendation")
+st.subheader("Assignment Recommendation")
 
 if drone_conflict:
     st.error("Resolve drone issues before assigning pilot.")
@@ -238,7 +236,7 @@ elif eligible:
 
 elif reassign_candidates:
     candidate = reassign_candidates[0]
-    st.warning("No free pilots — Urgent reassignment suggested.")
+    st.warning("No free pilots. Urgent reassignment suggested.")
     st.info(
         f"Suggested Reassignment: {candidate['name']} "
         f"(currently on low priority mission)"
@@ -251,16 +249,16 @@ else:
 # REJECTION EXPLANATION
 # =====================================================
 
-with st.expander("🔍 Why other pilots were rejected"):
+with st.expander("Why other pilots were rejected"):
     for name, reason in rejected:
-        st.write(f"{name} → {reason}")
+        st.write(f"{name} - {reason}")
 
 # =====================================================
 # CONVERSATIONAL INTERFACE
 # =====================================================
 
 st.divider()
-st.subheader("💬 Ask the AI Coordinator")
+st.subheader("Ask the AI Coordinator")
 
 query = st.chat_input("Ask about pilots, drones, missions...")
 
@@ -285,6 +283,5 @@ if query:
 
     else:
         st.write(
-            "Try asking: 'available pilots', "
-            "'urgent missions', or 'drones in maintenance'"
+            "Try asking: available pilots, urgent missions, or drones in maintenance."
         )
